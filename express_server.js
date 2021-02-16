@@ -50,13 +50,31 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/urls/:id", (req, res) => {
+  // edit an eixiting longURL
+  console.log("line 55");
+  // let updatedURL = "";
+  const temp = req.body.longURL;
+  // req.body.longURL = urlDatabase[req.params.id];
+  // urlDatabase[req.params.id] = temp;
+  const shortURL = req.params.id;
+  urlDatabase[shortURL] = temp;
+  // update urlDatabase[req.params.id];
+  res.redirect("/urls");
+
+});
+
+
 app.post("/urls", (req, res) => {
-  //creates a new shortURL
+  //creates and posts a NEW shortURL
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
+  console.log('url req body', req.body.longURL)
+
   urlDatabase[shortURL] = longURL;
   res.redirect("/urls");
 });
+
 
 
 const generateRandomString = function() {
