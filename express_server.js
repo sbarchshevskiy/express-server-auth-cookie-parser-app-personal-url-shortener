@@ -29,21 +29,16 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   // : for url ID, templateVars linked to urls_show
   // const longURL = req.body.longURL;
-  let returnLongURL;
-  for (let item in urlDatabase){
-    returnLongURL = urlDatabase[item]
-  }
-  const templateVars = { shortURL : req.params.shortURL,
-    longURL : returnLongURL
+  const templateVars = { shortURL : req.params.id,
+    longURL : urlDatabase[req.params.id]
   };
   res.render("urls_show", templateVars);
 });
 
-app.get("/u/:shortURL", (req, res) => {
+app.get("/u/:id", (req, res) => {
   // get longURL by the ID of shortURL and redirect to http://..destination
-  const specificURL = urlDatabase[req.params.id];
-  console.log('specific url: ',specificURL)
-  const shortURL = req.params.shortURL; //9sm5xK
+  const specificURL = urlDatabase[req.params.id];  //spfc.url: http://www.google.com
+  const shortURL = req.params.id; //9sm5xK
   const longURL = urlDatabase[shortURL];
   res.redirect(longURL);
 });
