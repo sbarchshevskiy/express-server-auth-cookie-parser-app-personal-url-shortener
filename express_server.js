@@ -26,28 +26,32 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-app.get("/urls/:shortURL", (req, res) => {
+app.get("/urls/:id", (req, res) => {
   // : for url ID, templateVars linked to urls_show
   // const longURL = req.body.longURL;
+  let returnLongURL;
+  for (let item in urlDatabase){
+    returnLongURL = urlDatabase[item]
+  }
   const templateVars = { shortURL : req.params.shortURL,
-    longURL : req.params.longURL,
-    
+    longURL : returnLongURL
   };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
   // get longURL by the ID of shortURL and redirect to http://..destination
+  const specificURL = urlDatabase[req.params.id];
+  console.log('specific url: ',specificURL)
   const shortURL = req.params.shortURL; //9sm5xK
   const longURL = urlDatabase[shortURL];
   res.redirect(longURL);
 });
 
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.post("/urls/:id/delete", (req, res) => {
   // deletes the URL from db
-  const shortURL = req.params.shortURL;
-  delete urlDatabase[req.params.shortURL];
+  delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
