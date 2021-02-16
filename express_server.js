@@ -3,11 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 
-app.use(bodyParser.urlencoded(
-  {
-    extended : true,
-  }
-));
+app.use(bodyParser.urlencoded({extended : true}));
 
 app.set('view engine', 'ejs');
 
@@ -16,9 +12,9 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls : urlDatabase};
@@ -31,7 +27,6 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-
   // : for url ID, templateVars linked to urls_show
   // const longURL = req.body.longURL;
   const templateVars = { shortURL : req.params.shortURL,
@@ -42,29 +37,22 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
+  // get longURL by the ID of shortURL and redirect to http://..destination
   const shortURL = req.params.shortURL; //9sm5xK
   const longURL = urlDatabase[shortURL];
   res.redirect(longURL);
 });
 
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Helloooo <b>World</b></body></html>\n");
-
-});
-
 app.post("/urls/:shortURL/delete", (req, res) => {
+  // deletes the URL from db
   const shortURL = req.params.shortURL;
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
 
 app.post("/urls", (req, res) => {
+  //creates a new shortURL
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
@@ -73,6 +61,7 @@ app.post("/urls", (req, res) => {
 
 
 const generateRandomString = function() {
+  // 5 random char string generator for shortURL
   let randomStr = "";
   const alphaNum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 6; i++)
@@ -82,5 +71,5 @@ const generateRandomString = function() {
 
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`server listening on port: ${PORT}!`);
 });
