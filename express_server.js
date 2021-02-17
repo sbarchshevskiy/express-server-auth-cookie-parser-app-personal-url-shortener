@@ -3,6 +3,9 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const checkIfUserExist = require("./helpers/coreFunctions");
+app.use(express.static("public")); // Static files (css / images)
+
 
 // const { use } = require("chai");
 // const { resolveInclude } = require("ejs");
@@ -89,10 +92,17 @@ app.post("/register", (req, res) => {
     password
   };
 
-  users.id = newUserObj;
+  const checkUser = checkIfUserExist(users, email);
+  //if it doesn't return true (user exists)
+  if (checkUser) {
+    users.id = newUserObj;
+    res.cookie('user_id', email);
+    res.redirect('/urls');
+  } else {
+    res.send(console.error(400));
+   
+  }
 
-  res.cookie('user_id', email);
-  res.redirect("/urls");
 });
 
 app.get("/login", (req, res) => {
@@ -120,13 +130,13 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   // const password = req.body.password;
 
-  res.cookie('email', email);
+  res.cookie('user_id', email);
   res.redirect("/urls");
 
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("email");
+  res.clearCookie('user_id');
   res.redirect("/login");
 });
 

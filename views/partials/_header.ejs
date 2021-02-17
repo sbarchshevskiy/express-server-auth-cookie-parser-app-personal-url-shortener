@@ -12,9 +12,13 @@
                      <%  } else { %>
                      <a class="nav-item nav-link" href="/urls">My URLs</a>
                      <a class="nav-item nav-link" href="/urls/new">Create New URL<a
-                     <a class="nav-item nav-link" href="/urls">Logged in as <%= email %> </a>
-                     <a class="nav-item nav-link" href="/login">Logout </a>
+                     <a class="nav-item nav-link" href="/urls"> <%= email %> </a>
 
+                     <form action="/logout" method="POST">
+                      <div class="btn-group pull-right">
+                      <button type="button" class="btn btn-secondary">Logout</button>      
+                      </div>              
+                    </form>
                   <% } %>
       </div>
     </div>
