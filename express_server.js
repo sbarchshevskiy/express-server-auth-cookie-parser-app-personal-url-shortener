@@ -4,6 +4,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const { use } = require("chai");
+const { resolveInclude } = require("ejs");
 
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(cookieParser());
@@ -27,7 +28,12 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   // route to create a new URL, route has to stay above urls/:id
-  res.render("urls_new");
+  const templateVars = { shortURL : req.params.id,
+    longURL : urlDatabase[req.params.id], 
+    username : req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
+
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -51,7 +57,14 @@ app.get("/u/:id", (req, res) => {
 app.post("/login", (req, res) => {
   const username = req.body.username;
   res.cookie('username', username);
+
   res.redirect("/urls");
+
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls")
 });
 
 app.post("/urls/:id/delete", (req, res) => {
