@@ -3,8 +3,9 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-const { use } = require("chai");
-const { resolveInclude } = require("ejs");
+
+// const { use } = require("chai");
+// const { resolveInclude } = require("ejs");
 
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(cookieParser());
@@ -33,9 +34,10 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  // render home page
   const templateVars = { urls : urlDatabase,
-    email : req.cookies["email"]};
-
+    email : req.cookies["user_id"],
+  };
   res.render("urls_index", templateVars);
 });
 
@@ -43,7 +45,7 @@ app.get("/urls/new", (req, res) => {
   // route to create a new URL, route has to stay above urls/:id
   const templateVars = { shortURL : req.params.id,
     longURL : urlDatabase[req.params.id],
-    email : req.cookies["email"]
+    email : req.cookies["user_id"],
   };
   res.render("urls_new", templateVars);
 
@@ -54,7 +56,8 @@ app.get("/urls/:id", (req, res) => {
   // const longURL = req.body.longURL;
   const templateVars = { shortURL : req.params.id,
     longURL : urlDatabase[req.params.id],
-    email : req.cookies["email"]
+    email : req.cookies["user_id"],
+
   };
   res.render("urls_show", templateVars);
 });
@@ -69,27 +72,27 @@ app.get("/u/:id", (req, res) => {
 
 app.get("/register", (req, res) => {
   const templateVars = { urls : urlDatabase,
-    email : req.cookies["email"]};
+    email : req.cookies["user_id"],
+  };
+
   res.render("registration", templateVars);
 });
 
 app.post("/register", (req, res) => {
   const email = req.body.email;
-  // const password = req.body.password;
+  const password = req.body.password;
+  const id = generateRandomString();
 
   const newUserObj = {
-    email,
+    id,
     email,
     password
   };
 
-  // const registeredUser = userDatabase[email];
-  // if (registeredUser){
+  users.id = newUserObj;
 
-  // }
-
-  res.cookie('email', email);
-  res.redirect("login");
+  res.cookie('user_id', email);
+  res.redirect("/urls");
 });
 
 app.get("/login", (req, res) => {
@@ -107,7 +110,9 @@ app.get("/login", (req, res) => {
   }
 
   const templateVars = { urls : urlDatabase,
-    email : req.cookies["email"]};
+    email : req.cookies["uder_id"],
+
+  };
   res.render("login", templateVars);
 });
 
@@ -116,7 +121,6 @@ app.post("/login", (req, res) => {
   // const password = req.body.password;
 
   res.cookie('email', email);
-
   res.redirect("/urls");
 
 });
@@ -145,7 +149,6 @@ app.post("/urls", (req, res) => {
   //creates and posts a NEW shortURL
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  console.log('url req body', req.body.longURL);
   urlDatabase[shortURL] = longURL;
   res.redirect("/urls");
 });
