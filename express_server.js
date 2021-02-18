@@ -3,9 +3,9 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-const bcrypt = require('bcrypt');
-const password = "secret"; // found in the req.params object
-const hashedPassword = bcrypt.hashSync(password, 10);
+// const bcrypt = require('bcrypt');
+// const password = "secret"; // found in the req.params object
+// const hashedPassword = bcrypt.hashSync(password, 10);
 const { checkIfUserExist, matchPass, newUserDBwithUrls } = require("./helpers/coreFunctions");
 app.use(express.static("public"));
 
@@ -23,14 +23,15 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+
 const urlDatabase2 = {
   "b2xVn2" : {
     longURL : "http://www.lighthouselabs.ca",
-    id : "userRandomID"
+    userId : "userRandomID"
   },
   "9sm5xK": {
     longURL : "http://www.google.com",
-    id: "user2RandomID"
+    userId: "user2RandomID"
   }
 };
 
@@ -58,9 +59,10 @@ app.get("/urls", (req, res) => {
   // render home page
   const templateVars =
     {
-      urls : urlDatabase,
+      urls : urlDatabase2,
       email : req.cookies["user_id"],
     };
+  console.log('urls index long url: ' , templateVars)
   res.render("urls_index", templateVars);
 });
 
@@ -87,7 +89,9 @@ app.get("/urls/:id", (req, res) => {
 app.get("/u/:id", (req, res) => {
 
   const shortURL = req.params.id; //9sm5xK
-  const longURL = urlDatabase[shortURL];
+  const longURL = req.body.longURL;
+  console.log('id long url: ',longURL);
+
   res.redirect(longURL);
 });
 
@@ -106,14 +110,19 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
 
   //------------------------------
-  // const emaildDB2 = req.body.email
-  // const longURLDB2 =req.body.longURL;
-  // const idDB2 = generateRandomString();
-  // const shortURL = req.body.shortURL
-  //
-  // const newDBObject = {
-  //
-  // }
+  //testing URLdb2
+  const longURLDB2 =req.body.longURL;
+  const idDB2 = generateRandomString();
+  const shortURL = req.params.shortURL
+
+  const newDBObject = {
+    id2 : idDB2,
+    longURLDB2,
+    shortURL
+
+  }
+  urlDatabase2[idDB2] = newDBObject;
+  console.log('new db object', newDBObject)
 
 
   //------------------------------
@@ -128,7 +137,7 @@ app.post("/register", (req, res) => {
   //if it doesn't return true (user exists)
   if (checkUser) {
     users.id = newUserObj;
-    res.cookie('user_id', email);
+    res.cookie('user_id', id);
     res.redirect('/urls');
   } else {
     res.send(console.error(400));
@@ -149,10 +158,10 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   const userInput = {email, password};
 
-  const logger = matchPass(users, userInput);
+  const userId = matchPass(users, userInput);
 
-  if (logger) {
-    res.cookie('user_id', email);
+  if (userId) {
+    res.cookie('user_id', userId);
     res.redirect("/urls");
     console.log('match!');
   } else {
@@ -185,16 +194,17 @@ app.post("/urls", (req, res) => {
   //creates and posts a NEW shortURL
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  const userId = generateRandomString();
+  const userId = req.cookies["user_id"];
 
   const short = users["id"];
   console.log('short', short);
   console.log('user ID', userId);
   console.log('long url', longURL);
   // urlDatabase[shortURL] = longURL;
-  urlDatabase[shortURL] = {longURL, userId};
+  urlDatabase2[shortURL] = {longURL, userId};
 
-  console.log('urldb2',urlDatabase);
+  console.log('urldb2',urlDatabase2);
+  console.log('urlsdb2 short URL', urlDatabase[shortURL])
   res.redirect("/urls");
 });
 
