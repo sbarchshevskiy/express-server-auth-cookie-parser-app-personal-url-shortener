@@ -3,7 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-const { checkIfUserExist, matchPass } = require("./helpers/coreFunctions");
+const { checkIfUserExist, matchPass, newUserDBwithUrls } = require("./helpers/coreFunctions");
 app.use(express.static("public")); // Static files (css / images)
 
 
@@ -14,10 +14,22 @@ app.use(bodyParser.urlencoded({extended : true}));
 app.use(cookieParser());
 app.set('view engine', 'ejs');
 
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const urlDatabase2 = {
+  "b2xVn2" : {
+    longURL : "http://www.lighthouselabs.ca",
+    userID : "userRandomID"
+  },
+  "9sm5xK": {
+    longURL : "http://www.google.com",
+    userID: "user2RandomID"
+  }
+}
 
 const users = {
   "userRandomID": {
@@ -31,6 +43,9 @@ const users = {
     password: "dishwasher-funk"
   }
 };
+
+// const urlDatabase2 = newUserDBwithUrls(users, urlDatabase);
+
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -46,6 +61,8 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   // route to create a new URL, route has to stay above urls/:id
+
+
   const templateVars = { shortURL : req.params.id,
     longURL : urlDatabase[req.params.id],
     email : req.cookies["user_id"],
@@ -55,20 +72,18 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  // : for url ID, templateVars linked to urls_show
-  // const longURL = req.body.longURL;
   const templateVars = { shortURL : req.params.id,
     longURL : urlDatabase[req.params.id],
     email : req.cookies["user_id"],
-
   };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
-
   const shortURL = req.params.id; //9sm5xK
   const longURL = urlDatabase[shortURL];
+  // testing urlDatabase2
+  urlDatabase2[longURL] = shortURL;
   res.redirect(longURL);
 });
 
@@ -103,7 +118,7 @@ app.post("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   const templateVars = { urls : urlDatabase,
-    email : req.cookies["uder_id"],
+    email : req.cookies["user_id"],
   };
   res.render("login", templateVars);
 });
@@ -137,7 +152,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  // edits an eixiting longURL
+  // edits an existing longURL
   const temp = req.body.longURL;
   const shortURL = req.params.id;
   urlDatabase[shortURL] = temp;
@@ -150,6 +165,8 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
+  urlDatabase2[longURL] = shortURL;
+  console.log('db2',urlDatabase2);
   res.redirect("/urls");
 });
 

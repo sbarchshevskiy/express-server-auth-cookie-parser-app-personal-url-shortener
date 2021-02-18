@@ -1,5 +1,5 @@
 const checkIfUserExist = function(db, em) {
-  // returs false to refuse registration and true to accept
+  // returns false to refuse registration and true to accept
   let result = 0;
   for (let item in db) {
     if (db[item].email === em) {
@@ -12,7 +12,25 @@ const checkIfUserExist = function(db, em) {
   }
 };
 
+
+const newUserDBwithUrls = function (userDB, urlDB) {
+  //curates a new data base base on shortURL as a main key
+  let newDB = {};
+  for (let user in userDB)
+
+    for (let url in urlDB) {
+      console.log(urlDB)
+      newDB = {
+        longURL : urlDB[url],
+        userID : url
+      }
+    }
+  return newDB;
+}
+
+
 const matchPass = function(firstObj, secondObj) {
+  // will match the passwords based on minimum occ. of 2
   let keyArray = [];
   let pwArray = [];
   for (let match in secondObj) {
@@ -37,4 +55,4 @@ const matchPass = function(firstObj, secondObj) {
 };
 
 
-module.exports = { checkIfUserExist, matchPass };
+module.exports = { checkIfUserExist, matchPass, newUserDBwithUrls };
