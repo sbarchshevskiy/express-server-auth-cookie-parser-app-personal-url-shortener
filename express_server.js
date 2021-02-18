@@ -23,11 +23,11 @@ const urlDatabase = {
 const urlDatabase2 = {
   "b2xVn2" : {
     longURL : "http://www.lighthouselabs.ca",
-    userID : "userRandomID"
+    id : "userRandomID"
   },
   "9sm5xK": {
     longURL : "http://www.google.com",
-    userID: "user2RandomID"
+    id: "user2RandomID"
   }
 }
 
@@ -49,12 +49,18 @@ const users = {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+
 });
 
 app.get("/urls", (req, res) => {
   // render home page
-  const templateVars = { urls : urlDatabase,
+
+
+  const templateVars =
+    {
+      urls : urlDatabase,
     email : req.cookies["user_id"],
+
   };
   res.render("urls_index", templateVars);
 });
@@ -66,12 +72,15 @@ app.get("/urls/new", (req, res) => {
   const templateVars = { shortURL : req.params.id,
     longURL : urlDatabase[req.params.id],
     email : req.cookies["user_id"],
+
   };
   res.render("urls_new", templateVars);
 
 });
 
 app.get("/urls/:id", (req, res) => {
+
+
   const templateVars = { shortURL : req.params.id,
     longURL : urlDatabase[req.params.id],
     email : req.cookies["user_id"],
@@ -80,15 +89,16 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
+
   const shortURL = req.params.id; //9sm5xK
   const longURL = urlDatabase[shortURL];
-  // testing urlDatabase2
-  urlDatabase2[longURL] = shortURL;
   res.redirect(longURL);
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { urls : urlDatabase,
+  const templateVars =
+    {
+      urls : urlDatabase,
     email : req.cookies["user_id"],
   };
   res.render("registration", templateVars);
@@ -117,7 +127,9 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  const templateVars = { urls : urlDatabase,
+  const templateVars =
+    {
+      urls : urlDatabase,
     email : req.cookies["user_id"],
   };
   res.render("login", templateVars);
@@ -165,8 +177,6 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
-  urlDatabase2[longURL] = shortURL;
-  console.log('db2',urlDatabase2);
   res.redirect("/urls");
 });
 
