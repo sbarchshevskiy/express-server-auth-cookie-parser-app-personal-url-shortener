@@ -29,29 +29,39 @@ const newUserDBwithUrls = function (userDB, urlDB) {
 }
 
 
-const matchPass = function(firstObj, secondObj) {
+const matchPass = function(usersDB, userInfo) {
   // will match the passwords based on minimum occ. of 2
-  let keyArray = [];
-  let pwArray = [];
-  for (let match in secondObj) {
-    keyArray.push(secondObj[match]);
-  }
-  for (let item in firstObj) {
-    pwArray.push(firstObj[item].password);
-    pwArray.push(firstObj[item].email);
-  }
-  let counter = 0;
-  for (let i = 0; i < keyArray.length; i++) {
-    for (let j = 0; j < pwArray.length; j++) {
-      if (keyArray[i] === pwArray[j]) {
-        counter++;
-        if (counter === 2) {
-          return true;
-        }
+  for (let userID in usersDB) {
+    if (usersDB[userID].email === userInfo.email) {
+      if (usersDB[userID].password === userInfo.password) {
+        return userID;
       }
     }
   }
   return false;
+
+
+  // let keyArray = [];
+  // let pwArray = [];
+  // for (let match in secondObj) {
+  //   keyArray.push(secondObj[match]);
+  // }
+  // for (let item in firstObj) {
+  //   pwArray.push(firstObj[item].password);
+  //   pwArray.push(firstObj[item].email);
+  // }
+  // let counter = 0;
+  // for (let i = 0; i < keyArray.length; i++) {
+  //   for (let j = 0; j < pwArray.length; j++) {
+  //     if (keyArray[i] === pwArray[j]) {
+  //       counter++;
+  //       if (counter === 2) {
+  //         return true;
+  //       }
+  //     }
+  //   }
+  // }
+  // return false;
 };
 
 
