@@ -3,9 +3,10 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-// const bcrypt = require('bcrypt');
-// const password = "secret"; // found in the req.params object
-// const hashedPassword = bcrypt.hashSync(password, 10);
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+const cookieSession = require('cookie-session')
+
 const { checkIfUserExist, matchPass, newUserDBwithUrls } = require("./helpers/coreFunctions");
 app.use(express.static("public"));
 
@@ -39,12 +40,12 @@ const users = {
   "userRandomID": {
     id : "userRandomID",
     email: "user@example.com",
-    password: "pw"
+    password: bcrypt.hashSync('pw2', saltRounds)
   },
   "user2RandomID": {
     id : "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync('pw1', saltRounds)
   }
 };
 
@@ -59,7 +60,7 @@ app.get("/urls", (req, res) => {
   // render home page
   const templateVars =
     {
-      urls : urlDatabase2,
+      urls : urlDatabase,
       email : req.cookies["user_id"],
     };
   console.log('urls index long url: ' , templateVars)
@@ -111,18 +112,18 @@ app.post("/register", (req, res) => {
 
   //------------------------------
   //testing URLdb2
-  const longURLDB2 =req.body.longURL;
-  const idDB2 = generateRandomString();
-  const shortURL = req.params.shortURL
+  // const longURLDB2 =req.body.longURL;
+  // const idDB2 = generateRandomString();
+  // const shortURL = req.params.shortURL
 
-  const newDBObject = {
-    id2 : idDB2,
-    longURLDB2,
-    shortURL
+  // const newDBObject = {
+  //   id2 : idDB2,
+  //   longURLDB2,
+  //   shortURL
 
-  }
-  urlDatabase2[idDB2] = newDBObject;
-  console.log('new db object', newDBObject)
+  // }
+  // urlDatabase2[idDB2] = newDBObject;
+  // console.log('new db object', newDBObject)
 
 
   //------------------------------
@@ -130,7 +131,7 @@ app.post("/register", (req, res) => {
   const newUserObj = {
     id,
     email,
-    password
+    password: bcrypt.hashSync(password, saltRounds)
   };
 
   const checkUser = checkIfUserExist(users, email);
@@ -154,11 +155,18 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const userInput = {email, password};
+
+  console.log('users ',users)
+
+  const userInput = {
+    email : req.body.email,
+  password: req.body.password};
+  // const email = req.body.email;
 
   const userId = matchPass(users, userInput);
+  // const reqBodyPassword = req.body.password;
+  console.log('user id ',userId)
+
 
   if (userId) {
     res.cookie('user_id', userId);
@@ -178,6 +186,8 @@ app.post("/logout", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   // deletes the URL from db
   delete urlDatabase[req.params.id];
+  const del = urlDatabase[req.params.id];
+  console.log('delete ',del)
   res.redirect("/urls");
 });
 
@@ -201,7 +211,7 @@ app.post("/urls", (req, res) => {
   console.log('user ID', userId);
   console.log('long url', longURL);
   // urlDatabase[shortURL] = longURL;
-  urlDatabase2[shortURL] = {longURL, userId};
+  urlDatabase[shortURL] = {longURL, userId};
 
   console.log('urldb2',urlDatabase2);
   console.log('urlsdb2 short URL', urlDatabase[shortURL])

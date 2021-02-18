@@ -1,3 +1,6 @@
+const bcrypt = require('bcrypt');
+
+
 const checkIfUserExist = function(db, em) {
   // returns false to refuse registration and true to accept
   let result = 0;
@@ -31,10 +34,14 @@ const newUserDBwithUrls = function (userDB, urlDB) {
 
 const matchPass = function(usersDB, userInfo) {
   // will match the passwords based on minimum occ. of 2
-  for (let userID in usersDB) {
-    if (usersDB[userID].email === userInfo.email) {
-      if (usersDB[userID].password === userInfo.password) {
-        return userID;
+    // const password = bcrypt.compareSync(reqBodyPassword, users[userId].password);
+  for (let userId in usersDB) {
+    console.log('usere ID', usersDB[userId].password)
+    console.log('user db ', usersDB)
+
+    if (usersDB[userId].email === userInfo.email) {
+      if (bcrypt.compareSync(userInfo.password, usersDB[userId].password)) {
+        return userId;
       }
     }
   }
