@@ -3,7 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-const checkIfUserExist = require("./helpers/coreFunctions");
+const { checkIfUserExist, matchPass } = require("./helpers/coreFunctions");
 app.use(express.static("public")); // Static files (css / images)
 
 
@@ -23,7 +23,7 @@ const users = {
   "userRandomID": {
     id : "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: "pw"
   },
   "user2RandomID": {
     id : "user2RandomID",
@@ -66,8 +66,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  // get longURL by the ID of shortURL and redirect to http://..destination
-  // const specificURL = urlDatabase[req.params.id];  //spfc.url: http://www.google.com
+
   const shortURL = req.params.id; //9sm5xK
   const longURL = urlDatabase[shortURL];
   res.redirect(longURL);
@@ -77,7 +76,6 @@ app.get("/register", (req, res) => {
   const templateVars = { urls : urlDatabase,
     email : req.cookies["user_id"],
   };
-
   res.render("registration", templateVars);
 });
 
@@ -100,39 +98,31 @@ app.post("/register", (req, res) => {
     res.redirect('/urls');
   } else {
     res.send(console.error(400));
-   
   }
-
 });
 
 app.get("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-
-  const loggedUser = users[email];
-  if (loggedUser) {
-    if (loggedUser.password === password) {
-      res.cookie('email', email);
-      res.redirect('/urls');
-    } else {
-      res.redirect("/register");
-    }
-  }
-
   const templateVars = { urls : urlDatabase,
     email : req.cookies["uder_id"],
-
   };
   res.render("login", templateVars);
 });
 
 app.post("/login", (req, res) => {
   const email = req.body.email;
-  // const password = req.body.password;
+  const password = req.body.password;
+  const userInput = {email, password};
 
-  res.cookie('user_id', email);
-  res.redirect("/urls");
+  const logger = matchPass(users, userInput);
 
+  if (logger) {
+    res.cookie('user_id', email);
+    res.redirect("/urls");
+    console.log('match!');
+  } else {
+    console.log('not match');
+    res.redirect('/login');
+  }
 });
 
 app.post("/logout", (req, res) => {
