@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt');
 
-
 const checkIfUserExist = function(db, em) {
   // returns false to refuse registration and true to accept
   let result = 0;
@@ -46,29 +45,7 @@ const matchPass = function(usersDB, userInfo) {
     }
   }
   return false;
-
-
-  // let keyArray = [];
-  // let pwArray = [];
-  // for (let match in secondObj) {
-  //   keyArray.push(secondObj[match]);
-  // }
-  // for (let item in firstObj) {
-  //   pwArray.push(firstObj[item].password);
-  //   pwArray.push(firstObj[item].email);
-  // }
-  // let counter = 0;
-  // for (let i = 0; i < keyArray.length; i++) {
-  //   for (let j = 0; j < pwArray.length; j++) {
-  //     if (keyArray[i] === pwArray[j]) {
-  //       counter++;
-  //       if (counter === 2) {
-  //         return true;
-  //       }
-  //     }
-  //   }
-  // }
-  // return false;
+0
 };
 
 
