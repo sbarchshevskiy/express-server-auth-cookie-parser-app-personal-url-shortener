@@ -3,8 +3,11 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
+const password = "secret"; // found in the req.params object
+const hashedPassword = bcrypt.hashSync(password, 10);
 const { checkIfUserExist, matchPass, newUserDBwithUrls } = require("./helpers/coreFunctions");
-app.use(express.static("public")); // Static files (css / images)
+app.use(express.static("public"));
 
 
 // const { use } = require("chai");
@@ -29,7 +32,7 @@ const urlDatabase2 = {
     longURL : "http://www.google.com",
     id: "user2RandomID"
   }
-}
+};
 
 const users = {
   "userRandomID": {
@@ -49,37 +52,30 @@ const users = {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-
 });
 
 app.get("/urls", (req, res) => {
   // render home page
-
-
   const templateVars =
     {
       urls : urlDatabase,
-    email : req.cookies["user_id"],
-
-  };
+      email : req.cookies["user_id"],
+    };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   // route to create a new URL, route has to stay above urls/:id
-
-
   const templateVars = { shortURL : req.params.id,
     longURL : urlDatabase[req.params.id],
     email : req.cookies["user_id"],
-
   };
+  console.log('template vars',templateVars);
   res.render("urls_new", templateVars);
 
 });
 
 app.get("/urls/:id", (req, res) => {
-
 
   const templateVars = { shortURL : req.params.id,
     longURL : urlDatabase[req.params.id],
@@ -99,8 +95,8 @@ app.get("/register", (req, res) => {
   const templateVars =
     {
       urls : urlDatabase,
-    email : req.cookies["user_id"],
-  };
+      email : req.cookies["user_id"],
+    };
   res.render("registration", templateVars);
 });
 
@@ -108,6 +104,19 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const id = generateRandomString();
+
+  //------------------------------
+  // const emaildDB2 = req.body.email
+  // const longURLDB2 =req.body.longURL;
+  // const idDB2 = generateRandomString();
+  // const shortURL = req.body.shortURL
+  //
+  // const newDBObject = {
+  //
+  // }
+
+
+  //------------------------------
 
   const newUserObj = {
     id,
@@ -130,8 +139,8 @@ app.get("/login", (req, res) => {
   const templateVars =
     {
       urls : urlDatabase,
-    email : req.cookies["user_id"],
-  };
+      email : req.cookies["user_id"],
+    };
   res.render("login", templateVars);
 });
 
@@ -176,7 +185,16 @@ app.post("/urls", (req, res) => {
   //creates and posts a NEW shortURL
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  const userId = generateRandomString();
+
+  const short = users["id"];
+  console.log('short', short);
+  console.log('user ID', userId);
+  console.log('long url', longURL);
+  // urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {longURL, userId};
+
+  console.log('urldb2',urlDatabase);
   res.redirect("/urls");
 });
 
