@@ -9,6 +9,7 @@ const saltRounds = 10;
 
 const { checkIfUserExist, matchPass } = require("./helpers/coreFunctions");
 
+app.use(express.static("public")); // Static files (css / images)
 
 app.use(cookieSession({
   name: 'session',
@@ -76,8 +77,9 @@ app.get("/urls/:id", (req, res) => {
   // specific Id doesn't fetch via http response
   // data comes in through backend
   const templateVars = { shortURL : req.params.id,
-    urlDatabase : urlDatabase, ///////////////////////////////////////
+    urlDatabase : urlDatabase,
     id : req.session["userId"],
+    urls : urlDatabase,
   };
   res.render("urls_show", templateVars);
 });
@@ -88,9 +90,10 @@ app.get("/u/:id", (req, res) => {
   // a duplication glitch was however removed
   // data parsed through console is correct
 
-  urlDatabase[shortURL] = longURL;
   const shortURL = req.params.id; //9sm5xK
   const longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL;
+
 
   res.redirect(longURL);
 });
@@ -106,7 +109,7 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   // implementation of bcrypt hashing
-  //as well as creationg of a new user object.
+  //as well as creating of a new user object.
   const email = req.body.email;
   const password = req.body.password;
   const id = generateRandomString();
@@ -118,7 +121,7 @@ app.post("/register", (req, res) => {
   };
 
   const checkUser = checkIfUserExist(users, email);
-  // false respnse to this = user exists
+  // false response to this = user exists
   if (checkUser) {
     users.id = newUserObj;
     req.session.userId = id;
@@ -171,7 +174,8 @@ app.post("/urls/:id", (req, res) => {
   // edits an existing longURL
   const temp = req.body.longURL;
   const shortURL = req.params.id;
-  urlDatabase[shortURL] = temp;
+  urlDatabase[shortURL]["longURL"] = temp;
+  console.log('short url', urlDatabase);
   res.redirect("/urls");
 
 });
