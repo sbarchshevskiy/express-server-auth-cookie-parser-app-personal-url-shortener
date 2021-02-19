@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt');
 
-const checkIfUserExist = function(db, em) {
+const checkIfUserExist = function(database, eml) {
   // returns false to refuse registration and true to accept
   let result = 0;
-  for (let item in db) {
-    if (db[item].email === em) {
+  for (let user in database) {
+    if (database[user].email === eml) {
       result ++;
     }
     if (result > 0) {
@@ -15,29 +15,9 @@ const checkIfUserExist = function(db, em) {
 };
 
 
-const newUserDBwithUrls = function (userDB, urlDB) {
-  //curates a new data base base on shortURL as a main key
-  let newDB = {};
-  for (let user in userDB)
-
-    for (let url in urlDB) {
-      console.log(urlDB)
-      newDB = {
-        longURL : urlDB[url],
-        userID : url
-      }
-    }
-  return newDB;
-}
-
-
 const matchPass = function(usersDB, userInfo) {
-  // will match the passwords based on minimum occ. of 2
-    // const password = bcrypt.compareSync(reqBodyPassword, users[userId].password);
+  // will match the passwords with bcrypt implemented in a priority for safety
   for (let userId in usersDB) {
-    console.log('usere ID', usersDB[userId].password)
-    console.log('user db ', usersDB)
-
     if (usersDB[userId].email === userInfo.email) {
       if (bcrypt.compareSync(userInfo.password, usersDB[userId].password)) {
         return userId;
@@ -45,8 +25,20 @@ const matchPass = function(usersDB, userInfo) {
     }
   }
   return false;
-0
+  
+};
+
+const matchPassTest = function(usersDB, userInfo) {
+  // clone matchPass for testing
+  for (let userID in usersDB) {
+    if (usersDB[userID].email === userInfo.email) {
+      if (usersDB[userID].password === userInfo.password) {
+        return userID;
+      }
+    }
+  }
+  return false;
 };
 
 
-module.exports = { checkIfUserExist, matchPass, newUserDBwithUrls };
+module.exports = { checkIfUserExist, matchPass, matchPassTest };
