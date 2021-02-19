@@ -6,19 +6,19 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-            <% if (!id) {%>
-                <a class="nav-item nav-link" href="/login">Login  </a>
-                <a class="nav-item nav-link" href="/register">Register<a>
-                     <%  } else { %>
-                      <a class="nav-item nav-link" href="/urls">My URLs</a>
-                     <a class="nav-item nav-link" href="/urls/new">Create New URL<a
-                     <a class="nav-item nav-link" href="/urls"> <%= id.email %> </a>
-                     <form action="/logout" method="POST">
-                      <div class="btn-group pull-right">
-                        <button type="submit" class="btn btn-primary">Logout</button>
-                      </div>              
-                    </form>
-                  <% } %>
+     <% if (!id) {%>
+      <a class="nav-item nav-link" href="/login">Login  </a>
+         <a class="nav-item nav-link" href="/register">Register<a>
+            <%  } else { %>
+              <a class="nav-item nav-link" href="/urls">My URLs</a>
+              <a class="nav-item nav-link" href="/urls/new">Create New URL<a
+              <a class="nav-item nav-link" href="/urls"> <%= id.email %> </a>
+               <form action="/logout" method="POST">
+                    <div class="btn-group pull-right">
+                       <button type="submit" class="btn btn-primary">Logout</button>
+                   </div>              
+              </form>
+       <% } %>
       </div>
     </div>
   </nav>

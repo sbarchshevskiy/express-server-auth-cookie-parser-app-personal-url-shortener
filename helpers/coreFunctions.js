@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 
 const checkIfUserExist = function(database, eml) {
   // returns false to refuse registration and true to accept
+  // if the e-mail does not exist in database
   let result = 0;
   for (let user in database) {
     if (database[user].email === eml) {
@@ -25,11 +26,11 @@ const matchPass = function(usersDB, userInfo) {
     }
   }
   return false;
-  
 };
 
+
 const matchPassTest = function(usersDB, userInfo) {
-  // clone matchPass for testing
+  // clone matchPass for testing since bcrypt was hardcoded in to matchTest
   for (let userID in usersDB) {
     if (usersDB[userID].email === userInfo.email) {
       if (usersDB[userID].password === userInfo.password) {

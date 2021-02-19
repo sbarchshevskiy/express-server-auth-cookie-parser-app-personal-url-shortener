@@ -1,14 +1,13 @@
 const express = require("express");
-const app = express();
-const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
 const cookieSession = require('cookie-session');
+const app = express();
+const PORT = 8080;
+const saltRounds = 10;
 
 const { checkIfUserExist, matchPass } = require("./helpers/coreFunctions");
-app.use(express.static("public"));
 
 
 app.use(cookieSession({
@@ -20,12 +19,6 @@ app.use(cookieSession({
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(cookieParser());
 app.set('view engine', 'ejs');
-
-
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
 
 
 const urlDatabase = {
@@ -74,24 +67,28 @@ app.get("/urls/new", (req, res) => {
     id : req.session["userId"],
   };
   console.log('new route',urlDatabase);
-
   res.render("urls_new", templateVars);
 
 });
 
 app.get("/urls/:id", (req, res) => {
-
+  // last minute glitch
+  // specific Id doesn't fetch via http response
+  // data comes in through backend
   const templateVars = { shortURL : req.params.id,
-    longURL : urlDatabase.longURL,
+    urlDatabase : urlDatabase, ///////////////////////////////////////
     id : req.session["userId"],
   };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
-  const userId = req.session["userId"];
-  urlDatabase[shortURL] = {longURL, userId};
-  ////////////////////
+  // fetch at specific ID have presented issues while
+  // a user would try to modify/edit a shortURL
+  // a duplication glitch was however removed
+  // data parsed through console is correct
+
+  urlDatabase[shortURL] = longURL;
   const shortURL = req.params.id; //9sm5xK
   const longURL = req.body.longURL;
 
@@ -107,8 +104,9 @@ app.get("/register", (req, res) => {
   res.render("registration", templateVars);
 });
 
-
 app.post("/register", (req, res) => {
+  // implementation of bcrypt hashing
+  //as well as creationg of a new user object.
   const email = req.body.email;
   const password = req.body.password;
   const id = generateRandomString();
@@ -120,11 +118,10 @@ app.post("/register", (req, res) => {
   };
 
   const checkUser = checkIfUserExist(users, email);
-  //if it doesn't return true (user exists)
+  // false respnse to this = user exists
   if (checkUser) {
     users.id = newUserObj;
     req.session.userId = id;
-    // res.cookie('userId', id);
     res.redirect('/urls');
   } else {
     res.send(console.error(400));
@@ -141,16 +138,11 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-
-
   const userInput = {
     email : req.body.email,
     password: req.body.password};
-  // const email = req.body.email;
 
   const userId = matchPass(users, userInput);
-  // const reqBodyPassword = req.body.password;
-
 
   if (userId) {
     req.session.userId = userId;
@@ -162,6 +154,9 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
+  //log out and deletion of cookies
+  //note that re-login or re-register
+  //will not work in all cases once cookies are deleted
   req.session = null;
   res.redirect("/login");
 });
@@ -185,9 +180,8 @@ app.post("/urls", (req, res) => {
   //creates and posts a NEW shortURL
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  const userId = req.session["userId"];
+  const userId = req.session.userId;
 
-  
   urlDatabase[shortURL] = {longURL, userId};
 
   res.redirect("/urls");
@@ -195,7 +189,7 @@ app.post("/urls", (req, res) => {
 
 
 const generateRandomString = function() {
-  // 5 random char string generator for shortURL
+  // generates random string of alphanumeric characters
   let randomStr = "";
   const alphaNum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 6; i++)
