@@ -32,7 +32,6 @@ const urlDatabase = {
     userId: "user2RandomID"
   }
 };
-console.log(urlDatabase);
 
 const users = {
   "userRandomID": {
@@ -67,7 +66,6 @@ app.get("/urls/new", (req, res) => {
     longURL : urlDatabase[req.params.id],
     id : req.session["userId"],
   };
-  console.log('new route',urlDatabase);
   res.render("urls_new", templateVars);
 
 });
@@ -93,7 +91,6 @@ app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id; //9sm5xK
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
-
 
   res.redirect(longURL);
 });
@@ -149,7 +146,6 @@ app.post("/login", (req, res) => {
 
   if (userId) {
     req.session.userId = userId;
-    // res.cookie('userId', userId);
     res.redirect("/urls");
   } else {
     res.redirect('/login');
@@ -175,7 +171,6 @@ app.post("/urls/:id", (req, res) => {
   const temp = req.body.longURL;
   const shortURL = req.params.id;
   urlDatabase[shortURL]["longURL"] = temp;
-  console.log('short url', urlDatabase);
   res.redirect("/urls");
 
 });
@@ -185,7 +180,6 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   const userId = req.session.userId;
-
   urlDatabase[shortURL] = {longURL, userId};
 
   res.redirect("/urls");
