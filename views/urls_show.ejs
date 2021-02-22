@@ -18,7 +18,7 @@
     <% }%>
   
 
-  <% if (!id) { %>
+  <% if (!user) { %>
     <h3><a class="nav-item nav-link" href="/register"> Register  </a></h3>
  <% } else { %>
     <div class="card text-center">
@@ -32,7 +32,7 @@
   </div>
 <div>
 <center><h5 class="card-title"> Edit: </h5></center>
-  <center><form class="form-group"  method="POST" action="/urls/<%= shortURL %>">
+  <center><form class="form-group"  method="POST" action="/urls/<%=resultShort %>">
       <input  class="form-control" type="text" name="longURL" placeholder="http://"  style="width: 300px; margin: 1em">
       <button type="submit" class="btn btn-primary">Submit</button>
   </form></center>

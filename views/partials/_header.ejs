@@ -6,17 +6,20 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-     <% if (!id) {%>
+     <% if (!user) {%>
       <a class="nav-item nav-link" href="/login">Login  </a>
          <a class="nav-item nav-link" href="/register">Register<a>
             <%  } else { %>
-              <a class="nav-item nav-link" href="/urls">My URLs</a>
-              <a class="nav-item nav-link" href="/urls/new">Create New URL<a
-              <a class="nav-item nav-link" href="/urls"> <%= id.email %> </a>
+                     <a class="nav-item nav-link" href="/urls">My URLs</a>
+              <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
                <form action="/logout" method="POST">
-                    <div align="right" class="btn-group pull-right">
-                    <button align=right type="submit" class="btn btn-primary">Logout</button>
-                   </div>              
+                   <div align="right" class="btn-group pull-right">
+                       <div>
+                        <a class="nav-item nav-link" >Logged in as: <%= user.email %> </a>
+                   </div>
+                        <button align=right type="submit" class="btn btn-primary">Logout</button>
+
+                    </div>
               </form>
        <% } %>
       </div>

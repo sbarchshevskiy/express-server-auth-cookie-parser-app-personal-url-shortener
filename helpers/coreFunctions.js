@@ -3,16 +3,12 @@ const bcrypt = require('bcrypt');
 const checkIfUserExist = function(database, eml) {
   // returns false to refuse registration and true to accept
   // if the e-mail does not exist in database
-  let result = 0;
   for (let user in database) {
     if (database[user].email === eml) {
-      result ++;
+      return database[user];
     }
-    if (result > 0) {
-      return false;
-    }
-    return true;
   }
+  return false;
 };
 
 
@@ -26,6 +22,18 @@ const matchPass = function(usersDB, userInfo) {
     }
   }
   return false;
+};
+
+const savedUrls = function(urlDB, id) {
+  // fetch proper url data for the registered users
+  let urls = {};
+  console.log('id',id);
+  for (let shortURL in urlDB) {
+    if (urlDB[shortURL]["userId"] === id) {
+      urls[shortURL] = {longURL : urlDB[shortURL]["longURL"], id};
+    }
+  }
+  return urls;
 };
 
 
@@ -42,4 +50,4 @@ const matchPassTest = function(usersDB, userInfo) {
 };
 
 
-module.exports = { checkIfUserExist, matchPass, matchPassTest };
+module.exports = { checkIfUserExist, matchPass, matchPassTest, savedUrls };

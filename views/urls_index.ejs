@@ -11,7 +11,7 @@
 <body>
   <%- include('partials/_header') %>
 
- <% if (!id) { %>
+ <% if (!user) { %>
     <h3><a class="nav-item nav-link" href="/register"> Register  </a></h3>
  <% } else { %>
      <main style="margin: 1em;"> 
@@ -39,10 +39,8 @@
               <td><form method="GET" action="/urls/<%=url %> " > 
                 <button class="btn btn-outline-success">Edit</button>
              </form>
-                
         </td>
         <td>
-          
           <form method="POST" action="/urls/<%=url %>/delete">
             <button class="btn btn-outline-success">Delete</button>
           </form>
